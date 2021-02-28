@@ -42,7 +42,7 @@ body {
     margin: 8px;
 }
 
-.addNewAnimal>button {
+.add__buttons>button {
     height: 25px;
     min-width: 60px;
 }

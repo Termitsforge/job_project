@@ -1,6 +1,7 @@
 function printLine(text, HTMLobject) {
     let count = 0;
     let result = '';
+    HTMLobject.textContent = "";
 
     function typeLine() {
         let interval = setTimeout(
@@ -24,7 +25,8 @@ function printLine(text, HTMLobject) {
 
 let text = document.querySelector("#text"),
     buttons = document.querySelectorAll("button"),
-    arrayAnimals = [];
+    i = 0;
+arrayAnimals = [];
 
 /* Класс Животное */
 class Animal {
@@ -53,11 +55,12 @@ objectFactory("Волк", "У него большие зубы ?", true);
 
 /* Стартовая страница */
 const start = () => {
-    printLine("Привет, загадай животное",text);
+    printLine("Привет, загадай животное", text);
     buttons[0].textContent = "Старт";
     buttons[1].textContent = "Сбросить все";
 
     buttons[0].onclick = function () {
+        i = 0;
         question();
     };
     buttons[1].onclick = function () {
@@ -68,14 +71,18 @@ const start = () => {
 };
 /*Добавление нового животного*/
 const AddNewAnimal = () => {
+
     let mainBox = document.querySelector(".main__box"),
         addAnimalBox = document.querySelector(".addNewAnimal"),
         inputsText = document.querySelectorAll("input"),
         radioButtuns = document.getElementsByName("answer"),
-        button = document.querySelector(".AddAnimal");
+        addText = document.querySelector(".add__h1");
+
+
     mainBox.style.display = "none";
     addAnimalBox.style.display = "block";
-    button.onclick = function () {
+    printLine("Расскажи о животном", addText);
+    buttons[2].onclick = function () {
         let answer;
         if (radioButtuns[0].checked) {
             answer = true;
@@ -84,25 +91,33 @@ const AddNewAnimal = () => {
             answer = false;
             radioButtuns[1].checked = false;
         }
+        if (!(inputsText[0].value === "") && !(inputsText[1].value === "")) {
+            objectFactory(inputsText[0].value, inputsText[1].value, answer);
+            inputsText[0].value = "";
+            inputsText[1].value = "";
+            mainBox.style.display = "block";
+            addAnimalBox.style.display = "none";
+            start();
+        } else {
+            printLine("Ошибка ввода", addText);
+            setTimeout(()=> printLine("Расскажи о животном", addText), 6000);
+        }
+    };
 
-        objectFactory(inputsText[0].value, inputsText[1].value, answer);
+    buttons[3].onclick = function () {
         inputsText[0].value = "";
         inputsText[1].value = "";
         mainBox.style.display = "block";
         addAnimalBox.style.display = "none";
         start();
-        for (let i = 0; i < arrayAnimals.length; i++) {
-            arrayAnimals[i].toString();
-        }
-    }
+    };
 
 }
 /*Станица с перечислением вопросов*/
-let i = 0;
 const question = () => {
     /*Проверка массива */
     if (arrayAnimals.length === 0) {
-        printLine("Я не знаю ни одного животного. Расскажи)",text);
+        printLine("Я не знаю ни одного животного. Расскажи)", text);
         buttons[0].textContent = "Слушай";
         buttons[1].textContent = "Пока";
         buttons[0].onclick = function () {
@@ -116,7 +131,7 @@ const question = () => {
         };
 
     } else if (arrayAnimals.length === 1) {
-        printLine(`Я знаю только ${arrayAnimals[0].name}. Ты его загадал ?`,text);
+        printLine(`Я знаю только ${arrayAnimals[0].name}. Ты его загадал ?`, text);
         buttons[0].textContent = "Верно";
         buttons[1].textContent = "Не верно";
 
@@ -130,14 +145,14 @@ const question = () => {
         };
 
     } else {
-        printLine(arrayAnimals[i].question,text);
+        printLine(arrayAnimals[i].question, text);
         buttons[0].textContent = "Да";
         buttons[1].textContent = "Нет";
 
         buttons[0].onclick = function () {
             let answer = true;
             if (arrayAnimals[i].checkAnswer(answer)) {
-                printLine(`Это ${arrayAnimals[i].name} ?`,text);
+                printLine(`Это ${arrayAnimals[i].name} ?`, text);
                 buttons[0].textContent = "Верно";
                 buttons[1].textContent = "Не верно";
 
@@ -146,8 +161,8 @@ const question = () => {
                     start();
                 };
                 buttons[1].onclick = function () {
-                    i = 0;
-                    AddNewAnimal();
+                    i++;
+                    question();
                 };
             } else if (i === arrayAnimals.length - 1) {
                 console.log("Я сдаюсь");
@@ -160,7 +175,7 @@ const question = () => {
         buttons[1].onclick = function () {
             let answer = false;
             if (arrayAnimals[i].checkAnswer(answer)) {
-                printLine(`Это ${arrayAnimals[i].name} ?`,text);
+                printLine(`Это ${arrayAnimals[i].name} ?`, text);
                 buttons[0].textContent = "Верно";
                 buttons[1].textContent = "Не верно";
 
