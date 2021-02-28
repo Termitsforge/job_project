@@ -10,10 +10,25 @@
 </head>
 
 <body>
-    <div class="main__box">
-        <h1 id="text"></h1>
-        <button id="right"></button>
-        <button id="left"></button>
+    <div class="box">
+        <div class="main__box" style="display: block;">
+            <h1 id="text"></h1>
+            <div class="buttons">
+                <button id="right"></button>
+                <button id="left"></button>
+            </div>
+        </div>
+        <div class="addNewAnimal" style="display: none;">
+            <h1>Расскажи о животном</h1>
+            <input type="text" placeholder="Название животного">
+            <input type="text" placeholder="Вопрос">
+            <br>
+            <input type="radio" name="answer" value="true"> Да
+            <input type="radio" name="answer"> Нет
+            <br>
+            <button class="AddAnimal">Добавить животного</button>
+
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
