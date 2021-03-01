@@ -25,34 +25,76 @@ function printLine(text, HTMLobject) {
 
 let text = document.querySelector("#text"),
     buttons = document.querySelectorAll("button"),
-    i = 0;
-arrayAnimals = [];
+    i = 0,
+    arrayAnimals = [],
+    arrayQuestionAsked = {
+        "вопрос": false,
+        "у него большая шея ?": true
+    };
 
 /* Класс Животное */
 class Animal {
-    constructor(name, question, answer) {
+    constructor(name) {
         this.name = name;
-        this.question = question;
-        this.answer = answer;
+        this.questions = {};
     }
-    checkAnswer(mayBeAnswer) {
-        if (mayBeAnswer === this.answer) {
-            return true;
-        } else return false;
+    addQuestion(question, answer) {
+        this.questions[question] = answer;
+    }
+    getQuestions() {
+        return this.questions;
     }
     toString() {
         console.log(`Name : ${this.name}; Question : ${this.question};  Answer : ${this.answer};`);
     }
 }
-/*Функция создание объекта и добавление его в массив*/
+
+function checkAnswer(mayBeAnswer, answer) {
+    if (mayBeAnswer === answer) {
+        return true;
+    } else return false;
+}
+
+
+/*Функция для проверки не был ли уже задан такой вопрос
+Если такой вопрос ещё не задавали, то функция возвращала true, если задавали, то false */
+const checkAskedQuestion = (question) => {
+    let count = 0,
+        result;
+    array = Object.keys(arrayQuestionAsked);
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] === question.toLowerCase()) {
+            count++;
+        }
+    }
+    if (count === 0) {
+        result = true;
+    } else result = false;
+
+    return result;
+   
+}
+/*Функция создание объекта и добавление его в массив
+Если животное с таким именем уже созданно, то он просто добавляет ему вопрос*/
 const objectFactory = (name, question, answer) => {
-    arrayAnimals.push(new Animal(name, question, answer));
+    let count = 0;
+    for (let i = 0; i < arrayAnimals.length; i++) {
+        if (arrayAnimals[i].name.toLowerCase() == name.toLowerCase()) {
+            arrayAnimals[i].addQuestion(question, answer);
+            count++;
+        }
+    }
+    if (count === 0) {
+        arrayAnimals.push(new Animal(name));
+        arrayAnimals[arrayAnimals.length - 1].addQuestion(question, answer);
+    }
+
 }
 
 objectFactory("Кот", "У него много шерсти ?", true);
+objectFactory("Кот", "Оно говорит мяу?", true);
 objectFactory("Жираф", "У него большая шея ?", true);
 objectFactory("Волк", "У него большие зубы ?", true);
-
 /* Стартовая страница */
 const start = () => {
     printLine("Привет, загадай животное", text);
@@ -66,6 +108,7 @@ const start = () => {
     buttons[1].onclick = function () {
         if (confirm("Вы серьёзно ? ")) {
             arrayAnimals = [];
+            alert("Все животные удалены");
         }
     };
 };
@@ -100,7 +143,7 @@ const AddNewAnimal = () => {
             start();
         } else {
             printLine("Ошибка ввода", addText);
-            setTimeout(()=> printLine("Расскажи о животном", addText), 6000);
+            setTimeout(() => printLine("Расскажи о животном", addText), 6000);
         }
     };
 
@@ -145,66 +188,98 @@ const question = () => {
         };
 
     } else {
-        printLine(arrayAnimals[i].question, text);
-        buttons[0].textContent = "Да";
-        buttons[1].textContent = "Нет";
-
-        buttons[0].onclick = function () {
-            let answer = true;
-            if (arrayAnimals[i].checkAnswer(answer)) {
-                printLine(`Это ${arrayAnimals[i].name} ?`, text);
-                buttons[0].textContent = "Верно";
-                buttons[1].textContent = "Не верно";
+        let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions());
+        let arrayAnswer = Object.values(arrayAnimals[i].getQuestions());
+        for (let j = 0; j < arrayQuestins.length; j++) {
+            /* j -- индекс вопроса */
+            let answer = arrayAnswer[j];
+            let question = arrayQuestins[j];
+            if (checkAskedQuestion(question)) {
+                printLine(question, text);
+                buttons[0].textContent = "Да";
+                buttons[1].textContent = "Нет";
 
                 buttons[0].onclick = function () {
-                    i = 0;
-                    start();
+                    arrayQuestionAsked[question.toLowerCase()] = true;
+                    let mayBeAnswer = true;
+                    console.log("Ответ положительный");
+                    if (checkAnswer(mayBeAnswer, answer)) {
+                        // /* Вывод ответа */
+                        // printLine(`Это ${arrayAnimals[i].name} ?`, text);
+                        // buttons[0].textContent = "Верно";
+                        // buttons[1].textContent = "Не верно";
+
+                        // buttons[0].onclick = function () {
+                        //     i = 0;
+                        //     start();
+                        // };
+                        // buttons[1].onclick = function () {
+                        //     i++;
+                        //     question();
+                        // };
+                    } else if (i === arrayAnimals.length - 1) {
+                        printLine("Я сдаюсь", text);
+                        buttons[0].textContent = "На старт";
+                        buttons[1].textContent = "Сказать ответ";
+                        buttons[0].onclick = function () {
+                            i = 0;
+                            start();
+                        };
+                        buttons[1].onclick = function () {
+                            i = 0;
+                            AddNewAnimal();
+                        };
+                    } else {
+                        i++;
+                        question();
+                    }
+
+
                 };
                 buttons[1].onclick = function () {
-                    i++;
-                    question();
+                    arrayQuestionAsked[question.toLowerCase()] = false;
+                    let mayBeAnswer = false;
+                    console.log("Ответ неверный");
+                    if (checkAnswer(mayBeAnswer, answer)) {
+                        // /* Вывод ответа */
+                        // printLine(`Это ${arrayAnimals[i].name} ?`, text);
+                        // buttons[0].textContent = "Верно";
+                        // buttons[1].textContent = "Не верно";
+
+                        // buttons[0].onclick = function () {
+                        //     i = 0;
+                        //     start();
+                        // };
+                        // buttons[1].onclick = function () {
+                        //     i = 0;
+                        //     AddNewAnimal();
+                        // };
+                    } else if (i === arrayAnimals.length - 1) {
+                        printLine("Я сдаюсь", text);
+                        buttons[0].textContent = "На старт";
+                        buttons[1].textContent = "Сказать ответ";
+                        buttons[0].onclick = function () {
+                            i = 0;
+                            start();
+                        };
+                        buttons[1].onclick = function () {
+                            i = 0;
+                            AddNewAnimal();
+                        };
+                    } else {
+                        i++;
+                        question();
+                    }
+
                 };
-            } else if (i === arrayAnimals.length - 1) {
-                console.log("Я сдаюсь");
             } else {
-                i++;
-                question();
+                console.log("Проверка не прошла");
+               
+                /* Что делать если такой вопрос уже был? */
             }
+        }
 
-        };
-        buttons[1].onclick = function () {
-            let answer = false;
-            if (arrayAnimals[i].checkAnswer(answer)) {
-                printLine(`Это ${arrayAnimals[i].name} ?`, text);
-                buttons[0].textContent = "Верно";
-                buttons[1].textContent = "Не верно";
 
-                buttons[0].onclick = function () {
-                    i = 0;
-                    start();
-                };
-                buttons[1].onclick = function () {
-                    i = 0;
-                    AddNewAnimal();
-                };
-            } else if (i === arrayAnimals.length - 1) {
-                printLine("Я сдаюсь", text);
-                buttons[0].textContent = "На старт";
-                buttons[1].textContent = "Сказать ответ";
-                buttons[0].onclick = function () {
-                    i = 0;
-                    start();
-                };
-                buttons[1].onclick = function () {
-                    i = 0;
-                    AddNewAnimal();
-                };
-            } else {
-                i++;
-                question();
-            }
-
-        };
     }
 
 }
