@@ -25,12 +25,8 @@ function printLine(text, HTMLobject) {
 
 let text = document.querySelector("#text"),
     buttons = document.querySelectorAll("button"),
-    i = 0,
     arrayAnimals = [],
-    arrayQuestionAsked = {
-        "вопрос": false,
-        "у него большая шея ?": true
-    };
+    arrayQuestionAsked = {};
 
 /* Класс Животное */
 class Animal {
@@ -38,14 +34,14 @@ class Animal {
         this.name = name;
         this.questions = {};
     }
-    addQuestion(question, answer) {
-        this.questions[question] = answer;
+    addQuestion(questionAnimals, answer) {
+        this.questions[questionAnimals] = answer;
     }
     getQuestions() {
         return this.questions;
     }
     toString() {
-        console.log(`Name : ${this.name}; Question : ${this.question};  Answer : ${this.answer};`);
+        console.log(`Name : ${this.name}; Question : ${this.questionAnimals};  Answer : ${this.answer};`);
     }
 }
 
@@ -58,35 +54,35 @@ function checkAnswer(mayBeAnswer, answer) {
 
 /*Функция для проверки не был ли уже задан такой вопрос
 Если такой вопрос ещё не задавали, то функция возвращала true, если задавали, то false */
-const checkAskedQuestion = (question) => {
+const checkAskedQuestion = (questionAnimals) => {
     let count = 0,
         result;
-    array = Object.keys(arrayQuestionAsked);
-    for (let i = 0; i < array.length; i++) {
-        if (array[i] === question.toLowerCase()) {
-            count++;
+    if (arrayQuestionAsked.length !== 0) {
+        array = Object.keys(arrayQuestionAsked);
+        for (let i = 0; i < array.length; i++) {
+            if (array[i] === questionAnimals.toLowerCase()) {
+                count++;
+            }
         }
-    }
-    if (count === 0) {
-        result = true;
-    } else result = false;
-
+        if (count === 0) {
+            result = true;
+        } else result = false;
+    } else result = true;
     return result;
-   
 }
 /*Функция создание объекта и добавление его в массив
 Если животное с таким именем уже созданно, то он просто добавляет ему вопрос*/
-const objectFactory = (name, question, answer) => {
+const objectFactory = (name, questionAnimals, answer) => {
     let count = 0;
     for (let i = 0; i < arrayAnimals.length; i++) {
         if (arrayAnimals[i].name.toLowerCase() == name.toLowerCase()) {
-            arrayAnimals[i].addQuestion(question, answer);
+            arrayAnimals[i].addQuestion(questionAnimals, answer);
             count++;
         }
     }
     if (count === 0) {
         arrayAnimals.push(new Animal(name));
-        arrayAnimals[arrayAnimals.length - 1].addQuestion(question, answer);
+        arrayAnimals[arrayAnimals.length - 1].addQuestion(questionAnimals, answer);
     }
 
 }
@@ -121,7 +117,6 @@ const AddNewAnimal = () => {
         radioButtuns = document.getElementsByName("answer"),
         addText = document.querySelector(".add__h1");
 
-
     mainBox.style.display = "none";
     addAnimalBox.style.display = "block";
     printLine("Расскажи о животном", addText);
@@ -140,6 +135,7 @@ const AddNewAnimal = () => {
             inputsText[1].value = "";
             mainBox.style.display = "block";
             addAnimalBox.style.display = "none";
+            arrayQuestionAsked = {};
             start();
         } else {
             printLine("Ошибка ввода", addText);
@@ -152,12 +148,87 @@ const AddNewAnimal = () => {
         inputsText[1].value = "";
         mainBox.style.display = "block";
         addAnimalBox.style.display = "none";
+        arrayQuestionAsked = {};
         start();
     };
 
 }
 /*Станица с перечислением вопросов*/
+let i = 0,
+    j = 0,
+    count = 0;
 const question = () => {
+    let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions()),
+        arrayAnswer = Object.values(arrayAnimals[i].getQuestions()),
+        answer = arrayAnswer[j],
+        questionAnimals = arrayQuestins[j];
+    /* 
+    arrayQuestins -- массив вопросов определённого животного
+    arrayAnswer -- массив ответов на вопросы
+    j -- индекс вопроса
+    count -- счетчик правильных ответов */
+    /*Функция вывода правильного ответа */
+    function iGiveUp() {
+        printLine("Я сдаюсь", text);
+        buttons[0].textContent = "На старт";
+        buttons[1].textContent = "Сказать ответ";
+        buttons[0].onclick = function () {
+            i = 0;
+            start();
+        };
+        buttons[1].onclick = function () {
+            i = 0;
+            AddNewAnimal();
+        };
+    }
+
+    function printCorrectAnswer() {
+        printLine(`Это ${arrayAnimals[i].name} ?`, text);
+        buttons[0].textContent = "Верно";
+        buttons[1].textContent = "Не верно";
+
+        buttons[0].onclick = function () {
+            i = 0;
+            j = 0;
+            count = 0;
+            arrayQuestionAsked = {};
+            start();
+        };
+        buttons[1].onclick = function () {
+            AddNewAnimal();
+        };
+    }
+
+    function buttonHandling(bool) {
+        arrayQuestionAsked[questionAnimals.toLowerCase()] = bool;
+        let mayBeAnswer = bool;
+        if (checkAnswer(mayBeAnswer, answer)) {
+            count++;
+            if (count === 3) {
+                printCorrectAnswer();
+            }
+            if (j === arrayQuestins.length - 1) {
+                if (count === arrayQuestins.length) {
+                    printCorrectAnswer();
+                } else {
+                    i++;
+                    j = 0;
+                    count = 0;
+                }
+            } else {
+                j++;
+                question();
+            }
+
+        } else if (i === arrayAnimals.length - 1) {
+            iGiveUp();
+        } else {
+            i++;
+            j = 0;
+            count = 0;
+            question();
+        }
+    }
     /*Проверка массива */
     if (arrayAnimals.length === 0) {
         printLine("Я не знаю ни одного животного. Расскажи)", text);
@@ -174,114 +245,56 @@ const question = () => {
         };
 
     } else if (arrayAnimals.length === 1) {
-        printLine(`Я знаю только ${arrayAnimals[0].name}. Ты его загадал ?`, text);
-        buttons[0].textContent = "Верно";
-        buttons[1].textContent = "Не верно";
-
-        buttons[0].onclick = function () {
-            i = 0;
-            start();
-        };
-        buttons[1].onclick = function () {
-            i = 0;
-            AddNewAnimal();
-        };
+        printCorrectAnswer();
 
     } else {
-        let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions());
-        let arrayAnswer = Object.values(arrayAnimals[i].getQuestions());
-        for (let j = 0; j < arrayQuestins.length; j++) {
-            /* j -- индекс вопроса */
-            let answer = arrayAnswer[j];
-            let question = arrayQuestins[j];
-            if (checkAskedQuestion(question)) {
-                printLine(question, text);
-                buttons[0].textContent = "Да";
-                buttons[1].textContent = "Нет";
+        if (checkAskedQuestion(questionAnimals)) {
+            printLine(questionAnimals, text);
+            buttons[0].textContent = "Да";
+            buttons[1].textContent = "Нет";
 
-                buttons[0].onclick = function () {
-                    arrayQuestionAsked[question.toLowerCase()] = true;
-                    let mayBeAnswer = true;
-                    console.log("Ответ положительный");
-                    if (checkAnswer(mayBeAnswer, answer)) {
-                        // /* Вывод ответа */
-                        // printLine(`Это ${arrayAnimals[i].name} ?`, text);
-                        // buttons[0].textContent = "Верно";
-                        // buttons[1].textContent = "Не верно";
-
-                        // buttons[0].onclick = function () {
-                        //     i = 0;
-                        //     start();
-                        // };
-                        // buttons[1].onclick = function () {
-                        //     i++;
-                        //     question();
-                        // };
+            buttons[0].onclick = function () {
+                buttonHandling(true);
+            };
+            buttons[1].onclick = function () {
+                buttonHandling(false);
+            };
+        } else {
+            arrayAskedQuestions = Object.keys(arrayQuestionAsked);
+            arrayAnswerToQuestions = Object.values(arrayQuestionAsked);
+            for (let i = 0; i < arrayAskedQuestions.length; i++) {
+                if (arrayAskedQuestions[i] === questionAnimals.toLowerCase()) {
+                    if (arrayAnswerToQuestions[i]) {
+                        count++;
+                        if (count === 3) {
+                            printCorrectAnswer();
+                        }
+                        if (j === arrayQuestins.length - 1) {
+                            if (count === arrayQuestins.length) {
+                                printCorrectAnswer();
+                            } else {
+                                i++;
+                                j = 0;
+                                count = 0;
+                            }
+                        } else {
+                            j++;
+                            question();
+                        }
                     } else if (i === arrayAnimals.length - 1) {
-                        printLine("Я сдаюсь", text);
-                        buttons[0].textContent = "На старт";
-                        buttons[1].textContent = "Сказать ответ";
-                        buttons[0].onclick = function () {
-                            i = 0;
-                            start();
-                        };
-                        buttons[1].onclick = function () {
-                            i = 0;
-                            AddNewAnimal();
-                        };
+                        iGiveUp();
                     } else {
-                        i++;
+                        if (j === arrayQuestins.length - 1) {
+                            i++;
+                            j = 0;
+                        } else j++;
                         question();
                     }
-
-
-                };
-                buttons[1].onclick = function () {
-                    arrayQuestionAsked[question.toLowerCase()] = false;
-                    let mayBeAnswer = false;
-                    console.log("Ответ неверный");
-                    if (checkAnswer(mayBeAnswer, answer)) {
-                        // /* Вывод ответа */
-                        // printLine(`Это ${arrayAnimals[i].name} ?`, text);
-                        // buttons[0].textContent = "Верно";
-                        // buttons[1].textContent = "Не верно";
-
-                        // buttons[0].onclick = function () {
-                        //     i = 0;
-                        //     start();
-                        // };
-                        // buttons[1].onclick = function () {
-                        //     i = 0;
-                        //     AddNewAnimal();
-                        // };
-                    } else if (i === arrayAnimals.length - 1) {
-                        printLine("Я сдаюсь", text);
-                        buttons[0].textContent = "На старт";
-                        buttons[1].textContent = "Сказать ответ";
-                        buttons[0].onclick = function () {
-                            i = 0;
-                            start();
-                        };
-                        buttons[1].onclick = function () {
-                            i = 0;
-                            AddNewAnimal();
-                        };
-                    } else {
-                        i++;
-                        question();
-                    }
-
-                };
-            } else {
-                console.log("Проверка не прошла");
-               
-                /* Что делать если такой вопрос уже был? */
+                }
             }
         }
-
-
     }
-
 }
+
 
 start();
