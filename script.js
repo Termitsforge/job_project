@@ -190,10 +190,14 @@ const question = () => {
             buttons[1].textContent = "Сказать ответ";
             buttons[0].onclick = function () {
                 i = 0;
+                j = 0;
+                count = 0;
                 start();
             };
             buttons[1].onclick = function () {
                 i = 0;
+                j = 0;
+                count = 0;
                 AddNewAnimal();
             };
         }
@@ -211,6 +215,10 @@ const question = () => {
                 start();
             };
             buttons[1].onclick = function () {
+                i = 0;
+                j = 0;
+                count = 0;
+                arrayQuestionAsked = {};
                 AddNewAnimal();
             };
         }
