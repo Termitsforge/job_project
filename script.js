@@ -38,9 +38,9 @@ class Animal {
         this.questions[questionAnimals] = answer;
     }
     getQuestions() {
-        if (arrayAnimals.length === 0){
+        if (arrayAnimals.length === 0) {
             return {};
-        }else return this.questions;
+        } else return this.questions;
     }
     toString() {
         console.log(`Name : ${this.name}; Question : ${this.questionAnimals};  Answer : ${this.answer};`);
@@ -92,6 +92,7 @@ const objectFactory = (name, questionAnimals, answer) => {
 objectFactory("Кот", "У него много шерсти ?", true);
 objectFactory("Кот", "Оно говорит мяу?", true);
 objectFactory("Жираф", "У него большая шея ?", true);
+objectFactory("Волк", "У него много шерсти ?", true);
 objectFactory("Волк", "У него большие зубы ?", true);
 /* Стартовая страница */
 const start = () => {
@@ -173,7 +174,7 @@ const question = () => {
             i = 0;
             start();
         };
-    }else{
+    } else {
         let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions()),
             arrayAnswer = Object.values(arrayAnimals[i].getQuestions()),
             answer = arrayAnswer[j],
@@ -272,9 +273,9 @@ const question = () => {
             } else {
                 arrayAskedQuestions = Object.keys(arrayQuestionAsked);
                 arrayAnswerToQuestions = Object.values(arrayQuestionAsked);
-                for (let i = 0; i < arrayAskedQuestions.length; i++) {
-                    if (arrayAskedQuestions[i] === questionAnimals.toLowerCase()) {
-                        if (arrayAnswerToQuestions[i]) {
+                for (let k = 0; k < arrayAskedQuestions.length; k++) {
+                    if (arrayAskedQuestions[k] === questionAnimals.toLowerCase()) {
+                        if (arrayAnswerToQuestions[k]) {
                             count++;
                             if (count === 3) {
                                 printCorrectAnswer();
@@ -294,11 +295,10 @@ const question = () => {
                         } else if (i === arrayAnimals.length - 1) {
                             iGiveUp();
                         } else {
-                            if (j === arrayQuestins.length - 1) {
-                                i++;
-                                j = 0;
-                            } else j++;
+                            i++;
+                            j = 0;
                             question();
+
                         }
                     }
                 }
