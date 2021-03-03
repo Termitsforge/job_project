@@ -38,7 +38,9 @@ class Animal {
         this.questions[questionAnimals] = answer;
     }
     getQuestions() {
-        return this.questions;
+        if (arrayAnimals.length === 0){
+            return {};
+        }else return this.questions;
     }
     toString() {
         console.log(`Name : ${this.name}; Question : ${this.questionAnimals};  Answer : ${this.answer};`);
@@ -158,78 +160,6 @@ let i = 0,
     j = 0,
     count = 0;
 const question = () => {
-    let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions()),
-        arrayAnswer = Object.values(arrayAnimals[i].getQuestions()),
-        answer = arrayAnswer[j],
-        questionAnimals = arrayQuestins[j];
-    /* 
-    arrayQuestins -- массив вопросов определённого животного
-    arrayAnswer -- массив ответов на вопросы
-    j -- индекс вопроса
-    count -- счетчик правильных ответов */
-    /*Функция вывода правильного ответа */
-    function iGiveUp() {
-        printLine("Я сдаюсь", text);
-        buttons[0].textContent = "На старт";
-        buttons[1].textContent = "Сказать ответ";
-        buttons[0].onclick = function () {
-            i = 0;
-            start();
-        };
-        buttons[1].onclick = function () {
-            i = 0;
-            AddNewAnimal();
-        };
-    }
-
-    function printCorrectAnswer() {
-        printLine(`Это ${arrayAnimals[i].name} ?`, text);
-        buttons[0].textContent = "Верно";
-        buttons[1].textContent = "Не верно";
-
-        buttons[0].onclick = function () {
-            i = 0;
-            j = 0;
-            count = 0;
-            arrayQuestionAsked = {};
-            start();
-        };
-        buttons[1].onclick = function () {
-            AddNewAnimal();
-        };
-    }
-
-    function buttonHandling(bool) {
-        arrayQuestionAsked[questionAnimals.toLowerCase()] = bool;
-        let mayBeAnswer = bool;
-        if (checkAnswer(mayBeAnswer, answer)) {
-            count++;
-            if (count === 3) {
-                printCorrectAnswer();
-            }
-            if (j === arrayQuestins.length - 1) {
-                if (count === arrayQuestins.length) {
-                    printCorrectAnswer();
-                } else {
-                    i++;
-                    j = 0;
-                    count = 0;
-                }
-            } else {
-                j++;
-                question();
-            }
-
-        } else if (i === arrayAnimals.length - 1) {
-            iGiveUp();
-        } else {
-            i++;
-            j = 0;
-            count = 0;
-            question();
-        }
-    }
-    /*Проверка массива */
     if (arrayAnimals.length === 0) {
         printLine("Я не знаю ни одного животного. Расскажи)", text);
         buttons[0].textContent = "Слушай";
@@ -243,52 +173,125 @@ const question = () => {
             i = 0;
             start();
         };
-
-    } else if (arrayAnimals.length === 1) {
-        printCorrectAnswer();
-
-    } else {
-        if (checkAskedQuestion(questionAnimals)) {
-            printLine(questionAnimals, text);
-            buttons[0].textContent = "Да";
-            buttons[1].textContent = "Нет";
-
+    }else{
+        let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions()),
+            arrayAnswer = Object.values(arrayAnimals[i].getQuestions()),
+            answer = arrayAnswer[j],
+            questionAnimals = arrayQuestins[j];
+        /* 
+        arrayQuestins -- массив вопросов определённого животного
+        arrayAnswer -- массив ответов на вопросы
+        j -- индекс вопроса
+        count -- счетчик правильных ответов */
+        /*Функция вывода правильного ответа */
+        function iGiveUp() {
+            printLine("Я сдаюсь", text);
+            buttons[0].textContent = "На старт";
+            buttons[1].textContent = "Сказать ответ";
             buttons[0].onclick = function () {
-                buttonHandling(true);
+                i = 0;
+                start();
             };
             buttons[1].onclick = function () {
-                buttonHandling(false);
+                i = 0;
+                AddNewAnimal();
             };
+        }
+
+        function printCorrectAnswer() {
+            printLine(`Это ${arrayAnimals[i].name} ?`, text);
+            buttons[0].textContent = "Верно";
+            buttons[1].textContent = "Не верно";
+
+            buttons[0].onclick = function () {
+                i = 0;
+                j = 0;
+                count = 0;
+                arrayQuestionAsked = {};
+                start();
+            };
+            buttons[1].onclick = function () {
+                AddNewAnimal();
+            };
+        }
+
+        function buttonHandling(bool) {
+            arrayQuestionAsked[questionAnimals.toLowerCase()] = bool;
+            let mayBeAnswer = bool;
+            if (checkAnswer(mayBeAnswer, answer)) {
+                count++;
+                if (count === 3) {
+                    printCorrectAnswer();
+                }
+                if (j === arrayQuestins.length - 1) {
+                    if (count === arrayQuestins.length) {
+                        printCorrectAnswer();
+                    } else {
+                        i++;
+                        j = 0;
+                        count = 0;
+                    }
+                } else {
+                    j++;
+                    question();
+                }
+
+            } else if (i === arrayAnimals.length - 1) {
+                iGiveUp();
+            } else {
+                i++;
+                j = 0;
+                count = 0;
+                question();
+            }
+        }
+        /*Проверка массива */
+        if (arrayAnimals.length === 1) {
+            printCorrectAnswer();
+
         } else {
-            arrayAskedQuestions = Object.keys(arrayQuestionAsked);
-            arrayAnswerToQuestions = Object.values(arrayQuestionAsked);
-            for (let i = 0; i < arrayAskedQuestions.length; i++) {
-                if (arrayAskedQuestions[i] === questionAnimals.toLowerCase()) {
-                    if (arrayAnswerToQuestions[i]) {
-                        count++;
-                        if (count === 3) {
-                            printCorrectAnswer();
-                        }
-                        if (j === arrayQuestins.length - 1) {
-                            if (count === arrayQuestins.length) {
+            if (checkAskedQuestion(questionAnimals)) {
+                printLine(questionAnimals, text);
+                buttons[0].textContent = "Да";
+                buttons[1].textContent = "Нет";
+
+                buttons[0].onclick = function () {
+                    buttonHandling(true);
+                };
+                buttons[1].onclick = function () {
+                    buttonHandling(false);
+                };
+            } else {
+                arrayAskedQuestions = Object.keys(arrayQuestionAsked);
+                arrayAnswerToQuestions = Object.values(arrayQuestionAsked);
+                for (let i = 0; i < arrayAskedQuestions.length; i++) {
+                    if (arrayAskedQuestions[i] === questionAnimals.toLowerCase()) {
+                        if (arrayAnswerToQuestions[i]) {
+                            count++;
+                            if (count === 3) {
                                 printCorrectAnswer();
+                            }
+                            if (j === arrayQuestins.length - 1) {
+                                if (count === arrayQuestins.length) {
+                                    printCorrectAnswer();
+                                } else {
+                                    i++;
+                                    j = 0;
+                                    count = 0;
+                                }
                             } else {
+                                j++;
+                                question();
+                            }
+                        } else if (i === arrayAnimals.length - 1) {
+                            iGiveUp();
+                        } else {
+                            if (j === arrayQuestins.length - 1) {
                                 i++;
                                 j = 0;
-                                count = 0;
-                            }
-                        } else {
-                            j++;
+                            } else j++;
                             question();
                         }
-                    } else if (i === arrayAnimals.length - 1) {
-                        iGiveUp();
-                    } else {
-                        if (j === arrayQuestins.length - 1) {
-                            i++;
-                            j = 0;
-                        } else j++;
-                        question();
                     }
                 }
             }
