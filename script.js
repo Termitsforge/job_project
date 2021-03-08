@@ -217,6 +217,7 @@ const question = () => {
             i = 0;
             start();
         };
+<<<<<<< HEAD
     } else if (arrayAnimals.length === 1) {
         printCorrectAnswer(animal);
     } else {
@@ -229,6 +230,42 @@ const question = () => {
             buttons[1].textContent = "Нет";
             questionObject.getAnimal(true).countGoVet++;
             questionObject.getAnimal(false).countGoVet++;
+=======
+    } else {
+        let arrayQuestins = Object.keys(arrayAnimals[i].getQuestions()),
+            arrayAnswer = Object.values(arrayAnimals[i].getQuestions()),
+            answer = arrayAnswer[j],
+            questionAnimals = arrayQuestins[j];
+        /* 
+        arrayQuestins -- массив вопросов определённого животного
+        arrayAnswer -- массив ответов на вопросы
+        j -- индекс вопроса
+        count -- счетчик правильных ответов */
+        /*Функция вывода правильного ответа */
+        function iGiveUp() {
+            printLine("Я сдаюсь", text);
+            buttons[0].textContent = "На старт";
+            buttons[1].textContent = "Сказать ответ";
+            buttons[0].onclick = function () {
+                i = 0;
+                j = 0;
+                count = 0;
+                start();
+            };
+            buttons[1].onclick = function () {
+                i = 0;
+                j = 0;
+                count = 0;
+                AddNewAnimal();
+            };
+        }
+
+        function printCorrectAnswer() {
+            printLine(`Это ${arrayAnimals[i].name} ?`, text);
+            buttons[0].textContent = "Верно";
+            buttons[1].textContent = "Не верно";
+
+>>>>>>> a99d2ab4289f9b93982a6cc97dd63f1efb7f3cce
             buttons[0].onclick = function () {
                 i = questionObject.getAnimal(true).i;
                 question();
@@ -236,7 +273,61 @@ const question = () => {
             buttons[1].onclick = function () {
                 i = questionObject.getAnimal(false).i;
                 question();
+<<<<<<< HEAD
             };
+=======
+            }
+        }
+        /*Проверка массива */
+        if (arrayAnimals.length === 1) {
+            printCorrectAnswer();
+
+        } else {
+            if (checkAskedQuestion(questionAnimals)) {
+                printLine(questionAnimals, text);
+                buttons[0].textContent = "Да";
+                buttons[1].textContent = "Нет";
+
+                buttons[0].onclick = function () {
+                    buttonHandling(true);
+                };
+                buttons[1].onclick = function () {
+                    buttonHandling(false);
+                };
+            } else {
+                arrayAskedQuestions = Object.keys(arrayQuestionAsked);
+                arrayAnswerToQuestions = Object.values(arrayQuestionAsked);
+                for (let k = 0; k < arrayAskedQuestions.length; k++) {
+                    if (arrayAskedQuestions[k] === questionAnimals.toLowerCase()) {
+                        if (arrayAnswerToQuestions[k]) {
+                            count++;
+                            if (count === 3) {
+                                printCorrectAnswer();
+                            }
+                            if (j === arrayQuestins.length - 1) {
+                                if (count === arrayQuestins.length) {
+                                    printCorrectAnswer();
+                                } else {
+                                    i++;
+                                    j = 0;
+                                    count = 0;
+                                }
+                            } else {
+                                j++;
+                                question();
+                            }
+                        } else if (i === arrayAnimals.length - 1) {
+                            iGiveUp();
+                        } else {
+                            i++;
+                            j = 0;
+                            question();
+
+                        }
+                    }
+                }
+            }
+>>>>>>> a99d2ab4289f9b93982a6cc97dd63f1efb7f3cce
         }
     }
 }
