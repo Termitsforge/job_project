@@ -200,6 +200,9 @@ const question = () => {
         };
     }
     
+
+
+    
     /*Проверка на пустой массив */
     let animal = arrayAnimals[i];
     if (arrayAnimals.length === 0) {
