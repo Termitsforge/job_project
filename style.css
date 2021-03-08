@@ -7,7 +7,10 @@
 body {
     height: 100vh;
 }
-
+button{
+    height: 25px;
+    min-width: 60px;
+}
 .box {
     height: 100vh;
     display: flex;
@@ -19,7 +22,6 @@ body {
     position: relative;
     height: 100px;
     min-width: 400px;
-
 }
 
 #text {
@@ -32,21 +34,12 @@ body {
     right: 20px;
     bottom: 20px;
 }
-
-.buttons>button {
-    height: 25px;
-    min-width: 60px;
-}
-
 .addNewAnimal>* {
     margin: 8px;
 }
-
-.add__buttons>button {
+input[type="text"] {
     height: 25px;
-    min-width: 60px;
 }
-
-.addNewAnimal>input[type="text"] {
-    height: 25px;
+.add__only__animal>*{
+    margin: 8px;
 }
